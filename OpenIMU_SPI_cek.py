@@ -34,7 +34,7 @@ class SpiOpenIMU:
         self.cs_channel = cs_pin
         self.interrupt_channel = interrupt_pin
         self.drdy = drdy_status
-        self.speed = 900000
+        self.speed = 2000000
         self.delay = 0 #ns
         self.word = 8 #硬件限制为8位
 
@@ -258,7 +258,7 @@ if __name__ == "__main__":
                 
             else:
                 list_sts, list_rate, list_acc, list_temp, list_mag = openimu_spi.burst_read(first_register=0x3E,subregister_num=8)
-                str_burst = "time:{0:>10f};  status:{3:>20s} ; gyro:{1:>50s};  accel:{2:>40s}; temp:{4:>10s}; mag:{5:>10s}\n".format(
+                str_burst = "time:{0:>20f};  status:{3:>20s} ; gyro:{1:>50s};  accel:{2:>40s}; temp:{4:>10s}; mag:{5:>20s}\n".format(
                     time.clock(), ", ".join([str(x) for x in list_rate]), ", ".join([str(x) for x in list_acc]), ", ".join([str(x) for x in list_sts]), 
                     ", ".join([str(x) for x in list_temp]), ", ".join([str(x) for x in list_mag])
                     )
