@@ -17,7 +17,7 @@ OpenIMU SPI package version 0.2.0.
 import os
 import sys
 import spidev
-import time
+import time, math
 import struct
 try:
     import RPi.GPIO as GPIO
@@ -37,6 +37,7 @@ class SpiOpenIMU:
         self.speed = 2000000
         self.delay = 0 #ns
         self.word = 8 #硬件限制为8位
+        
 
         self.gpio_setting()
         self.spidev_setting()
@@ -70,7 +71,7 @@ class SpiOpenIMU:
             time.sleep(0.000010)
             GPIO.output(self.cs_channel,GPIO.LOW) 
             resp_single = self.spi.xfer2([0x00,0x00],self.speed,self.speed)  #receive the back target data
-            GPIO.output(self.cs_channel,GPIO.HIGH)             
+            GPIO.output(self.cs_channel,GPIO.HIGH)
             return self.combine_reg(resp_single[0],resp_single[1])
         else:
             time.sleep(0.000010)
@@ -137,17 +138,21 @@ class SpiOpenIMU:
                 deg.append(self.combine_reg(resp[18],resp[19]) * 360/65536)
                 deg.append(self.combine_reg(resp[20],resp[21]) * 360/65536)
                 deg.append(self.combine_reg(resp[22],resp[23]) * 360/65536)
-                return rate, acc, deg   
+                # return rate, acc, deg   
             if "330BA" in self.module and first_register == 0x3F:
-                tmstp.append(self.combine_reg(resp[18],resp[19]) * 1)
-                tmstp.append(self.combine_reg(resp[20],resp[21]) * 1)
-                return rate, acc, tmstp   
+                tmstp.append(self.combine_reg(resp[18],resp[19], fmt='>H') * 1)
+                tmstp.append(self.combine_reg(resp[20],resp[21], fmt='>H') * 1)
+                # return rate, acc, tmstp   
             temp.append(self.combine_reg(resp[16],resp[17]) * 0.073111172849435 + 31.0) 
             if '300ZI' in self.module and first_register == 0x3F:
                 mag.append(self.combine_reg(resp[18],resp[19]) / 16354)
                 mag.append(self.combine_reg(resp[20],resp[21]) / 16354)
-                mag.append(self.combine_reg(resp[22],resp[23]) / 16354)                 
-        return sts, rate, acc, temp, mag
+                mag.append(self.combine_reg(resp[22],resp[23]) / 16354)      
+            if '300ZI' in self.module and first_register == 0x3D:
+                deg.append(self.combine_reg(resp[18],resp[19]) * (180/math.pi) * 65536 / (2*math.pi))
+                deg.append(self.combine_reg(resp[20],resp[21]) * (180/math.pi) * 65536 / (2*math.pi))
+                deg.append(self.combine_reg(resp[22],resp[23]) * (180/math.pi) * 65536 / (2*math.pi))              
+        return sts, rate, acc, temp, mag, deg, tmstp
 
     def spidev_setting(self):
         bus = 0    #supporyed values:0,1
@@ -170,7 +175,7 @@ class SpiOpenIMU:
         print(self.spi.lsbfirst)
         return True
     def combine_reg(self,msb,lsb, fmt= '>h'):
-        msb = struct.pack('B',msb)
+        msb = struct.pack('B',msb) 
         lsb = struct.pack('B',lsb)      
         return struct.unpack(fmt,msb+lsb)[0]   #MSB firstly
 
@@ -179,8 +184,8 @@ class SpiOpenIMU:
         self.spi.close()
         
 if __name__ == "__main__":       
-    openimu_spi = SpiOpenIMU(target_module="300ZI",drdy_status=True, fw='4.1.2')   #set the module name and drdy status(enalbe or not)-----------------step: 1
-    burst_read, single_read, single_write = True, False, False  # set the read style, burst or single------------step:2
+    openimu_spi = SpiOpenIMU(target_module="330BI",drdy_status=True, fw='1.2.1')   #set the module name and drdy status(enalbe or not)-----------------step: 1
+    burst_read, single_read, single_write = True, True, False  # set the read style, burst or single------------step:2
     f = open("data_" + str(openimu_spi.module) + ".txt", "w")
     str_config = "module style:{0}; drdy:{1};   burst read:{2}; single read:{3} \n".format(openimu_spi.module, openimu_spi.drdy, burst_read, single_read)
     print(str_config)
@@ -251,16 +256,16 @@ if __name__ == "__main__":
                 # str_burst = "time:{0:>10f};  gyro:{1:>25s};  accel:{2:>25s} \n".format(
                 #     time.clock(), ", ".join([str(x) for x in list_rate]), ", ".join([str(x) for x in list_acc])
                 #     )
-                list_rate, list_acc, tmstamp = openimu_spi.burst_read(first_register=0x3F,subregister_num=10)     #input the read register and numbers of subregisters want to read together
+                list_sts, list_rate, list_acc, list_temp, list_mag, list_deg, tmstamp = openimu_spi.burst_read(first_register=0x3E,subregister_num=8)     #input the read register and numbers of subregisters want to read together
                 str_burst = "time:{0:>10f};  gyro:{1:>50s};  accel:{2:>50s}; timestamp:{3:>25s} \n".format(
                     time.clock(), ", ".join([str(x) for x in list_rate]), ", ".join([str(x) for x in list_acc]), ", ".join([str(x) for x in tmstamp])
                 )
                 
             else:
-                list_sts, list_rate, list_acc, list_temp, list_mag = openimu_spi.burst_read(first_register=0x3E,subregister_num=8)
-                str_burst = "time:{0:>20f};  status:{3:>20s} ; gyro:{1:>50s};  accel:{2:>40s}; temp:{4:>10s}; mag:{5:>20s}\n".format(
+                list_sts, list_rate, list_acc, list_temp, list_mag, list_deg, tmstamp= openimu_spi.burst_read(first_register=0x3D,subregister_num=11)
+                str_burst = "time:{0:>20f};  status:{3:>20s} ; gyro:{1:>50s};  accel:{2:>40s}; temp:{4:>10s}; mag:{5:>20s}; deg:{6:>20s}\n".format(
                     time.clock(), ", ".join([str(x) for x in list_rate]), ", ".join([str(x) for x in list_acc]), ", ".join([str(x) for x in list_sts]), 
-                    ", ".join([str(x) for x in list_temp]), ", ".join([str(x) for x in list_mag])
+                    ", ".join([str(x) for x in list_temp]), ", ".join([str(x) for x in list_mag]), ", ".join([str(x) for x in list_deg])
                     )
             print(str_burst)               
             f.write(str_burst)
