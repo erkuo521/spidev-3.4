@@ -20,6 +20,7 @@ import spidev
 import time, math
 import struct
 import json
+import traceback
 try:
     import RPi.GPIO as GPIO
 except RuntimeError:
@@ -27,25 +28,34 @@ except RuntimeError:
 from OpenIMU_SPI_cek import *
 from testcase_SPI import *
 
+module_name = "300ZI"
+app_name = "IMU"
+
 openimu_spi = SpiOpenIMU(target_module="300ZI",drdy_status=True, fw='4.1.4') 
 
-f = open("data_" + str(openimu_spi.module) + ".txt", "w")
+filename = ["_", openimu_spi.module,"_", app_name, "_", openimu_spi.fw_version]
+
+f = open("data" + "".join(filename) + '.txt', "w")
 str_config = "module style:{openimu_spi.module}; drdy:{openimu_spi.drdy};\n"
 print(str_config)
 f.write(str_config) 
 input("Power on IMU !!!!!!!!")
 time.sleep(2)  
-
-with open('spi_config_' + openimu_spi.module + '.json') as json_data:
+with open('spi_config' + "".join(filename[:4]) + '.json') as json_data:
     spi_attribute = json.load(json_data)
 
 test_runner = test_case(spi_module=openimu_spi, spi_config=spi_attribute, recoredfile=f)
 
 test_runner.default_setting_check();
-test_runner.single_data_reading();
+# test_runner.single_data_reading();
+# test_runner.burst_data_reading(burst_type="standard_burst")
+# test_runner.burst_data_reading(burst_type="extended_mag_burst")
+# test_runner.setting_check_pwr_rst(save_config=False)
+# test_runner.setting_check_pwr_rst(save_config=True)
+# test_runner.recover_default_setting(save_config=True)
 
 input("finished")
-
+os._exit(0)
 
 
 
@@ -132,8 +142,14 @@ try:
         # input('next cycle')
 
     
-except KeyboardInterrupt:
+# except KeyboardInterrupt:
+#     f.close()
+#     print("stoped by customer!")
+
+except Exception as e:
     f.close()
+    print(e)
+    traceback.print_exc()    
     print("stoped by customer!")
         
 

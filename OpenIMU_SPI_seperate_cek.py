@@ -38,7 +38,6 @@ class SpiOpenIMU:
         self.speed = 2000000
         self.delay = 0 #ns
         self.word = 8 #硬件限制为8位
-        self.fw_version = fw
         
 
         self.gpio_setting()
@@ -91,13 +90,11 @@ class SpiOpenIMU:
         GPIO.output(self.cs_channel,GPIO.HIGH)
         return True 
     
-    def burst_read(self, first_register, subregister_num, sratm_fac):  
+    def burst_read(self, first_register, subregister_num, factors={}):  
         '''
-        sratm_fac={"rate":[0.005, 0], "accel":[0.25, 0]} 
-        status, rate, accel, temp, mag factors dict
+        factors={"rate":[0.005, 0], "accel":[0.25, 0]}
         '''         
         sts, rate, acc, deg, tmstp, temp, mag = [], [], [], [], [], [], []
-
         # if self.drdy and self.module != "300":  # 300 no drdy now, so only not 300 will go next
         #     while not GPIO.event_detected(self.interrupt_channel):                
         #         pass 
@@ -113,13 +110,13 @@ class SpiOpenIMU:
                 resp += self.spi.xfer2([0x00,0x00],self.speed,self.speed)[:]
                 GPIO.output(self.cs_channel,GPIO.HIGH)
             #unit:degree per second
-            rate.append(self.combine_reg(resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+            rate.append(self.combine_reg(resp[4],resp[5])/200)
+            rate.append(self.combine_reg(resp[6],resp[7])/200)
+            rate.append(self.combine_reg(resp[8],resp[9])/200)
             #unit:mg
-            acc.append(self.combine_reg(resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+            acc.append(self.combine_reg(resp[10],resp[11])/4)
+            acc.append(self.combine_reg(resp[12],resp[13])/4)
+            acc.append(self.combine_reg(resp[14],resp[15])/4)
         else:     #300,330 is here                   
             GPIO.output(self.cs_channel,GPIO.LOW)
             # xfer2([value],speed_hz,delay_usec_cs), SPI bi-direction data transfer.
@@ -131,15 +128,15 @@ class SpiOpenIMU:
             resp = self.spi.xfer2(first_register_send,self.speed,2*self.delay)
             GPIO.output(self.cs_channel,GPIO.HIGH)
 
-            sts.append(self.combine_reg(resp[2],resp[3], fmt='>H') * (sratm_fac.get("status")[0]) + (sratm_fac.get("status")[1]))
+            sts.append(self.combine_reg(resp[2],resp[3], fmt='>H'))
             #unit:degree per second
-            rate.append(self.combine_reg(resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+            rate.append(self.combine_reg(resp[4],resp[5])/64)
+            rate.append(self.combine_reg(resp[6],resp[7])/64)
+            rate.append(self.combine_reg(resp[8],resp[9])/64)
             #unit:g
-            acc.append(self.combine_reg(resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1])) 
+            acc.append(self.combine_reg(resp[10],resp[11])/4000)
+            acc.append(self.combine_reg(resp[12],resp[13])/4000)
+            acc.append(self.combine_reg(resp[14],resp[15])/4000) 
             #unit:deg
             if '330BI' in self.module and first_register == 0x3F:
                 deg.append(self.combine_reg(resp[18],resp[19]) * 360/65536)
@@ -150,11 +147,11 @@ class SpiOpenIMU:
                 tmstp.append(self.combine_reg(resp[18],resp[19], fmt='>H') * 1)
                 tmstp.append(self.combine_reg(resp[20],resp[21], fmt='>H') * 1)
                 # return rate, acc, tmstp   
-            temp.append(self.combine_reg(resp[16],resp[17]) * (sratm_fac.get("temp")[0]) + (sratm_fac.get("temp")[1])) 
+            temp.append(self.combine_reg(resp[16],resp[17]) * 0.073111172849435 + 31.0) 
             if '300ZI' in self.module and first_register == 0x3F:
-                mag.append(self.combine_reg(resp[18],resp[19]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
-                mag.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
-                mag.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1])) 
+                mag.append(self.combine_reg(resp[18],resp[19]) / 16354)
+                mag.append(self.combine_reg(resp[20],resp[21]) / 16354)
+                mag.append(self.combine_reg(resp[22],resp[23]) / 16354)      
             if '300ZI' in self.module and first_register == 0x3D:
                 deg.append(self.combine_reg(resp[18],resp[19]) * (180/math.pi) * 65536 / (2*math.pi))
                 deg.append(self.combine_reg(resp[20],resp[21]) * (180/math.pi) * 65536 / (2*math.pi))
