@@ -11,6 +11,7 @@ OpenIMU SPI package version 0.2.0.
 	gpio(bcm4)  <==>      cs   black line
     gpio(bcm17) <==>      drdy red line
 	gnd         <==>      gnd
+    bcm 27                nRST
 @cek from Aceinna 2019.11.4
 '''
 
@@ -24,6 +25,7 @@ try:
 except RuntimeError:
     print("Error import RPi.GPIO!")
 import traceback
+from gpio import *
 
 class SpiOpenIMU:
     def __init__(self, target_module = "300", fw='0.0', cs_pin = 4, interrupt_pin = 17, drdy_status = False):
@@ -39,6 +41,9 @@ class SpiOpenIMU:
         self.delay = 0 #ns
         self.word = 8 #硬件限制为8位
         self.fw_version = fw
+
+        self.power = aceinna_gpio(use_gpio=True)# bcm gpio rst EVK power
+
         
 
         self.gpio_setting()
@@ -156,9 +161,12 @@ class SpiOpenIMU:
                 mag.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
                 mag.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1])) 
             if '300ZI' in self.module and first_register == 0x3D:
-                deg.append(self.combine_reg(resp[18],resp[19]) * (180/math.pi) * 65536 / (2*math.pi))
-                deg.append(self.combine_reg(resp[20],resp[21]) * (180/math.pi) * 65536 / (2*math.pi))
-                deg.append(self.combine_reg(resp[22],resp[23]) * (180/math.pi) * 65536 / (2*math.pi))              
+                # deg.append(self.combine_reg(resp[18],resp[19]) * (180/math.pi) * 65536 / (2*math.pi)) #10430.378
+                # deg.append(self.combine_reg(resp[20],resp[21]) * (180/math.pi) * 65536 / (2*math.pi))
+                # deg.append(self.combine_reg(resp[22],resp[23]) * (180/math.pi) * 65536 / (2*math.pi))     
+                deg.append(self.combine_reg(resp[18],resp[19])/10430.378)
+                deg.append(self.combine_reg(resp[20],resp[21])/10430.378)
+                deg.append(self.combine_reg(resp[22],resp[23])/10430.378)         
         return sts, rate, acc, temp, mag, deg, tmstp
 
     def spidev_setting(self):
@@ -185,6 +193,13 @@ class SpiOpenIMU:
         msb = struct.pack('B',msb) 
         lsb = struct.pack('B',lsb)      
         return struct.unpack(fmt,msb+lsb)[0]   #MSB firstly
+
+    def power_reset(self, delay=1):
+        self.power.power_off()
+        time.sleep(delay)
+        self.power.power_on()
+        time.sleep(delay)
+
 
     def __del__(self):
         GPIO.cleanup()

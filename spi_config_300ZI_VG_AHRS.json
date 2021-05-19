@@ -1,0 +1,95 @@
+{
+    "name":"parameters for devices",
+    "version":"4.1.4",
+    "type":"OpenIMU300ZI",
+    "app":"IMU",
+
+    "test_items":[],
+    "start_idx": -1, 
+    "debug_mode":"FALSE", 
+
+    "set_register_sequence":0,
+
+    "set_register_notes":["address", "default value", "new set value", ["to be set val list"]],
+    "set_register":{
+        "MAG_SCALE_FACTOR": ["0x32", "None"],
+        "DRDY_RATE":["0x37", "0x01", "0x02", ["0x00", "0x01", "0x02", "0x03", "0x04", "0x05", "0x06", "0x07", "0x08", "0x09", "0x0B"]],
+        "ACCEL_LPF": ["0x38", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
+        "ACCEL_SCALE_FACTOR": ["0x46", "0x04"],
+        "RATE_SCALE_FACTOR": ["0X47", "0x40"],
+        "MAG_X_HARD_IRON": ["0x48", "None"],
+        "MAG_Y_HARD_IRON": ["0x4A", "None"],
+        "MAG_SF_IRON": ["0x4C", "None"],
+        "MAG_ANGLE_SF_IRON": ["0x4E", "None"],
+        "SERIAL_NUMBER0": ["0x52", "0x18"],
+        "SERIAL_NUMBER1": ["0x53", "0x08"],
+        "SERIAL_NUMBER2": ["0x54", "0x4"],
+        "SERIAL_NUMBER3": ["0x55", "0x00"],
+        "SERIAL_NUMBER4": ["0x58", "0x5"],
+        "SERIAL_NUMBER5": ["0x59", "0x28"],
+        "PRODUCT_ID0": ["0x56", "0x30"],
+        "PRODUCT_ID1": ["0x57", "0x00"],
+        "MASTER_STATUS": ["0x5A", "0x0"],
+        "HW_STATUS": ["0x5C", "0x0"],
+        "SW_STATUS": ["0x5E", "0x0"],
+        "ACCEL_RANGE": ["0x70", "0x08", "NA", ["NA"]],
+        "RATE_RANGE": ["0x71", "0x08", "NA", ["NA"]],
+        "ORIENTATION_MSB": ["0x74", "0x00", "0x00"],
+        "ORIENTATION_LSB": ["0x75", "0x6B", "0x09"],
+        "RATE_LPF": ["0x78", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
+        "HW_VERSION": ["0x7E", "0x04"],
+        "SW_VERSION": ["0x7F", "0x73"]
+    },
+    "data_register_notes":["address", "factor", "offset"],
+    "data_register":{
+        "X_Rate": ["0x04", 0.015625, 0],
+        "Y_Rate": [ "0x06", 0.015625, 0],
+        "Z_Rate": [ "0x08", 0.015625, 0],
+        "X_Accel": [ "0x0A", 0.00025, 0],
+        "Y_Accel": [ "0x0C", 0.00025, 0],
+        "Z_Accel": [ "0x0E", 0.00025, 0],
+        "X_Mag": [ "0x10", 0.00006114711997064938, 0],
+        "Y_Mag": [ "0x12", 0.00006114711997064938, 0],
+        "Z_Mag": [ "0x14", 0.00006114711997064938, 0],
+        "BOARD_TEMP": [ "0x16", 0.073111172849435, 31],
+        "RATE_TEMP": [ "0x18", 0.073111172849435, 31]
+    },
+    "data_burst_notes":["factor", "offset"],
+    "standard_burst":{
+        "register":"0x3E",
+        "length":8,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 31]
+        }
+    },
+    "extended_mag_burst":{
+        "register":"0x3F",
+        "length":11,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "x_mag", "y_mag", "z_mag"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 0],
+            "mag": [0.00006114711997064938, 0]
+        }   
+
+    },
+    "extended_vg_burst":{
+        "register":"0x3D",
+        "length":11,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "roll", "pitch", "yaw"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 0],
+            "yaw": [597678.3065414611, 0]
+        }
+    }
+}
+
