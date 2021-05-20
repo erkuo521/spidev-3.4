@@ -30,14 +30,15 @@ from testcase_SPI import *
 
 try: 
     module_name = "300ZI"
-    app_name = "INS"
+    app_name = "IMU"
+    fw_num = '4.1.4'
 
-    openimu_spi = SpiOpenIMU(target_module="300ZI",drdy_status=True, fw='4.1.4') 
+    openimu_spi = SpiOpenIMU(target_module=module_name,drdy_status=True, fw=fw_num) 
 
     filename = ["_", openimu_spi.module,"_", app_name, "_", openimu_spi.fw_version]
 
     f = open("data" + "".join(filename) + '.txt', "w")
-    str_config = "module style:{openimu_spi.module}; drdy:{openimu_spi.drdy};\n"
+    str_config = f"module style:{openimu_spi.module}; drdy:{openimu_spi.drdy}; {app_name}_{openimu_spi.fw_version};\n"
     print(str_config)
     f.write(str_config) 
     input("Power on IMU !!!!!!!!")
@@ -46,16 +47,21 @@ try:
         spi_attribute = json.load(json_data)
 
     test_runner = test_case(spi_module=openimu_spi, spi_config=spi_attribute, recoredfile=f)
+    test_runner.recover_default_setting(save_config=True)
 
     test_runner.default_setting_check();
     test_runner.single_data_reading();
+
+    test_runner.burst_data_reading(burst_type="extended_vg_burst")
     test_runner.burst_data_reading(burst_type="standard_burst")
     test_runner.burst_data_reading(burst_type="extended_mag_burst")
-    test_runner.burst_data_reading(burst_type="extended_vg_burst")
+    
+
     test_runner.setting_check_pwr_rst(save_config=False)
     test_runner.setting_check_pwr_rst(save_config=True)
 
-    test_runner.single_register_setting_values(actual_measure=[0x37])
+    test_runner.single_register_setting_values()
+    # test_runner.single_register_setting_values(actual_measure=[0x37])
     reg_list=[0x74, 0x75], 
     reg_name = "orientation",
     val_list=[0x0000, 0x0009, 0x0023, 0x002A, 0x0041, 0x0048, 0x0062, 0x006B, 0x0085, 
@@ -64,7 +70,11 @@ try:
             ] 
     test_runner.double_register_setting_values(reg_name,reg_list,val_list)
 
+    test_runner.detect_sf_gyro() #rotation 90deg, 200hz, sum of ryro_z = 18000 t1= 0.005
+
+
     test_runner.recover_default_setting(save_config=True)
+
 
     input("finished")
     os._exit(0)

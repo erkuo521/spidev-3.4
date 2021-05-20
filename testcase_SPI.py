@@ -16,6 +16,7 @@ OpenIMU SPI package version 0.2.0.
 
 import os
 import sys
+import collections
 from typing import Sequence
 import spidev
 import time, math
@@ -86,9 +87,10 @@ class test_case:
             self.file.write(pr)
     
     def setting_check_pwr_rst(self, save_config=False):
-        tbs_registers = {}
+        tbs_registers = collections.OrderedDict()
         registers = self.config.get("set_register")
-        for i,j in zip(registers.keys(), registers.values()): 
+        # for i,j in zip(registers.keys(), registers.values()): 
+        for i,j in registers.items(): 
             if len(j) >= 3: 
                 tbs_registers[i] = j
                 if j[2] != "NA":                
@@ -126,13 +128,13 @@ class test_case:
         self.dev.power_reset()
 
     def single_register_setting_values(self, actual_measure=[]):
-        tbs_registers = {}
+        tbs_registers = collections.OrderedDict()
         registers = self.config.get("set_register")
         for i,j in zip(registers.keys(), registers.values()): 
             if len(j) >= 4: 
                 tbs_registers[i] = j
         
-        for i,j in zip(tbs_registers.keys(), tbs_registers.values()):
+        for i,j in tbs_registers.items():
             #j[0]--target register, j[1]--target data. j[2]-new set value, NA is igore
             print(i,j, j[3])
             if j[3] != ["NA"]: #i[3] is value list to be set
@@ -181,7 +183,22 @@ class test_case:
             rlt = 'pass' if 'fail' not in double_rlt else 'fail'
             pr = f"{str(reg_name)}=register={hex(reg_list[0][0])}{hex(reg_list[0][1])}=write={hex(i)}=feedback={hex(fb_list[0])}{hex(fb_list[1])}=result={rlt}; \n"
             print(pr)
-            self.file.write(pr)                        
+            self.file.write(pr)   
+
+    def detect_sf_gyro(self):
+        '''
+        90 deg rotation, 200hz log data
+        '''      
+        registers = self.config.get("set_register")
+        odr_reg_def_val = registers.get("DRDY_RATE")        
+        self.dev.single_write(int(odr_reg_def_val[0],16), int(odr_reg_def_val[1],16)) # write 200hz
+        time.sleep(0.010)
+
+        input('start to rotation 90 deg, end within 10s')
+        tm1 = time.time()
+        while (time.time() - tm1) < 10:
+            self.burst_data_reading(burst_type="standard_burst")
+        input('end rotation 90 deg')
 
     def recover_default_setting(self, save_config=True):
         print(sys._getframe().f_code.co_name)
@@ -190,14 +207,17 @@ class test_case:
             #j[0]--target register, j[1]--target data. if j[1]== None, igore
             if j[1] == "None":
                 continue
-            self.dev.single_write(int(j[0],16), int(j[1],16))           
+            self.dev.single_write(int(j[0],16), int(j[1],16))  
+            time.sleep(0.010)         
             pr = f"{i}=register={j[0]}=expect={j[1]}; \n"
             print(pr)
             self.file.write(pr) 
 
         if save_config:
             self.dev.single_write(0x76, 0x00)
-            time.sleep(0.010)   
+            time.sleep(0.010)  
+
+        time.sleep(1) 
 
 
         

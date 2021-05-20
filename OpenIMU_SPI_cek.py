@@ -161,12 +161,12 @@ class SpiOpenIMU:
                 mag.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
                 mag.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1])) 
             if '300ZI' in self.module and first_register == 0x3D:
-                # deg.append(self.combine_reg(resp[18],resp[19]) * (180/math.pi) * 65536 / (2*math.pi)) #10430.378
-                # deg.append(self.combine_reg(resp[20],resp[21]) * (180/math.pi) * 65536 / (2*math.pi))
-                # deg.append(self.combine_reg(resp[22],resp[23]) * (180/math.pi) * 65536 / (2*math.pi))     
-                deg.append(self.combine_reg(resp[18],resp[19])/10430.378)
-                deg.append(self.combine_reg(resp[20],resp[21])/10430.378)
-                deg.append(self.combine_reg(resp[22],resp[23])/10430.378)         
+                # deg.append(self.combine_reg(resp[18],resp[19]) * 57.3 * (2*math.pi)/65536) #65536/(2*math.pi)=10430.378350470453   65536/360=0.0054931640625
+                # deg.append(self.combine_reg(resp[20],resp[21]) *  57.3 * (2*math.pi)/65536)
+                # deg.append(self.combine_reg(resp[22],resp[23]) *  57.3 * (2*math.pi)/65536)     
+                deg.append(self.combine_reg(resp[18],resp[19]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
+                deg.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
+                deg.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))       
         return sts, rate, acc, temp, mag, deg, tmstp
 
     def spidev_setting(self):
