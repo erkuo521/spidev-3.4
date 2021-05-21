@@ -1,3 +1,6 @@
 data
 data_*.*
 data_*.*
+*.lnk
+python-spi - 快捷方式
+*.list
