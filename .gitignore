@@ -1,2 +1,3 @@
-data/*.*
-data/data_300ZI.txt
+data
+data_*.*
+data_*.*

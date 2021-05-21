@@ -11,6 +11,7 @@ OpenIMU SPI package version 0.2.0.
 	gpio(bcm4)  <==>      cs   black line
     gpio(bcm17) <==>      drdy red line
 	gnd         <==>      gnd
+    gpio(bcm27) <==>      nRST
 @cek from Aceinna 2019.11.4
 '''
 
