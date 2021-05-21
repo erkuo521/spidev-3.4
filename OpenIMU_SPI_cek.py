@@ -106,7 +106,7 @@ class SpiOpenIMU:
         # if self.drdy and self.module != "300":  # 300 no drdy now, so only not 300 will go next
         #     while not GPIO.event_detected(self.interrupt_channel):                
         #         pass 
-        while not GPIO.event_detected(self.interrupt_channel):                
+        while (not GPIO.event_detected(self.interrupt_channel)) and self.drdy:                
             pass 
         if "381" in self.module == "381":
             GPIO.output(self.cs_channel,GPIO.LOW)
@@ -152,8 +152,8 @@ class SpiOpenIMU:
                 deg.append(self.combine_reg(resp[22],resp[23]) * 360/65536)
                 # return rate, acc, deg   
             if "330BA" in self.module and first_register == 0x3F:
-                tmstp.append(self.combine_reg(resp[18],resp[19], fmt='>H') * 1)
-                tmstp.append(self.combine_reg(resp[20],resp[21], fmt='>H') * 1)
+                tmstp.append(self.combine_reg(resp[18],resp[19], fmt='>H') * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
+                tmstp.append(self.combine_reg(resp[20],resp[21], fmt='>H') * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
                 # return rate, acc, tmstp   
             temp.append(self.combine_reg(resp[16],resp[17]) * (sratm_fac.get("temp")[0]) + (sratm_fac.get("temp")[1])) 
             if '300ZI' in self.module and first_register == 0x3F:

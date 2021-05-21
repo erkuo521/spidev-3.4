@@ -30,9 +30,9 @@ from OpenIMU_SPI_cek import *
 from testcase_SPI import *
 
 try: 
-    module_name = "300ZI"
+    module_name = "330BA"
     app_name = "IMU"
-    fw_num = '4.1.4'
+    fw_num = '26.0.8'
 
     openimu_spi = SpiOpenIMU(target_module=module_name,drdy_status=True, fw=fw_num) 
 
@@ -56,6 +56,9 @@ try:
     test_runner.burst_data_reading(burst_type="extended_vg_burst")
     test_runner.burst_data_reading(burst_type="standard_burst")
     test_runner.burst_data_reading(burst_type="extended_mag_burst")
+
+    if "330BA" in module_name:
+        test_runner.burst_data_reading(burst_type="extended_time_burst") 
     
 
     test_runner.setting_check_pwr_rst(save_config=False)

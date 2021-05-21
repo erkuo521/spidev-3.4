@@ -1,7 +1,7 @@
 {
     "name":"parameters for devices",
-    "version":"2.1",
-    "type":"OpenIMU330BI",
+    "version":"26.0.8",
+    "type":"IMU330BA",
     "app":"IMU",
 
     "test_items":[],
@@ -56,6 +56,20 @@
             "rate": [0.015625, 0],
             "accel": [0.00025, 0],
             "temp": [0.073111172849435, 31]
+        }
+    },
+    "extended_time_burst":{
+        "register":"0x3F",
+        "length":10,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "time1", "time2"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 31],
+            "time": [0.0001, 0],
+            "1pps-used": [0.0001],
+            "1khz":[0.000001]
         }
     }
 }
