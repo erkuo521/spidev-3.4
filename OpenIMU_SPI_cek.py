@@ -118,13 +118,13 @@ class SpiOpenIMU:
                 resp += self.spi.xfer2([0x00,0x00],self.speed,self.speed)[:]
                 GPIO.output(self.cs_channel,GPIO.HIGH)
             #unit:degree per second
-            rate.append(self.combine_reg(resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+            rate.append(self.combine_reg('>h', resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+            rate.append(self.combine_reg('>h', resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+            rate.append(self.combine_reg('>h', resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
             #unit:mg
-            acc.append(self.combine_reg(resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+            acc.append(self.combine_reg('>h', resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+            acc.append(self.combine_reg('>h', resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+            acc.append(self.combine_reg('>h', resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
         else:     #300,330 is here                   
             GPIO.output(self.cs_channel,GPIO.LOW)
             # xfer2([value],speed_hz,delay_usec_cs), SPI bi-direction data transfer.
@@ -136,37 +136,43 @@ class SpiOpenIMU:
             resp = self.spi.xfer2(first_register_send,self.speed,2*self.delay)
             GPIO.output(self.cs_channel,GPIO.HIGH)
 
-            sts.append(self.combine_reg(resp[2],resp[3], fmt='>H') * (sratm_fac.get("status")[0]) + (sratm_fac.get("status")[1]))
-            #unit:degree per second
-            rate.append(self.combine_reg(resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            rate.append(self.combine_reg(resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
-            #unit:g
-            acc.append(self.combine_reg(resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
-            acc.append(self.combine_reg(resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1])) 
-            #unit:deg
-            if '330BI' in self.module and first_register == 0x3F:
-                deg.append(self.combine_reg(resp[18],resp[19]) * 360/65536)
-                deg.append(self.combine_reg(resp[20],resp[21]) * 360/65536)
-                deg.append(self.combine_reg(resp[22],resp[23]) * 360/65536)
-                # return rate, acc, deg   
-            if "330BA" in self.module and first_register == 0x3F:
-                tmstp.append(self.combine_reg(resp[18],resp[19], fmt='>H') * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
-                tmstp.append(self.combine_reg(resp[20],resp[21], fmt='>H') * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
-                # return rate, acc, tmstp   
-            temp.append(self.combine_reg(resp[16],resp[17]) * (sratm_fac.get("temp")[0]) + (sratm_fac.get("temp")[1])) 
-            if '300ZI' in self.module and first_register == 0x3F:
-                mag.append(self.combine_reg(resp[18],resp[19]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
-                mag.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
-                mag.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1])) 
-            if '300ZI' in self.module and first_register == 0x3D:
-                # deg.append(self.combine_reg(resp[18],resp[19]) * 57.3 * (2*math.pi)/65536) #65536/(2*math.pi)=10430.378350470453   65536/360=0.0054931640625
-                # deg.append(self.combine_reg(resp[20],resp[21]) *  57.3 * (2*math.pi)/65536)
-                # deg.append(self.combine_reg(resp[22],resp[23]) *  57.3 * (2*math.pi)/65536)     
-                deg.append(self.combine_reg(resp[18],resp[19]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
-                deg.append(self.combine_reg(resp[20],resp[21]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
-                deg.append(self.combine_reg(resp[22],resp[23]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))       
+            if 'convert' in sratm_fac.keys():
+                print('4bytes convert')
+                unpack_list = self.combine_reg('>Lfffffff', resp[2:34])
+                # unpack_list = (1,2,3,4,5,6,7,8,)
+                return [[x] for x in unpack_list]
+            else:
+                sts.append(self.combine_reg('>H', resp[2], resp[3]) * (sratm_fac.get("status")[0]) + (sratm_fac.get("status")[1]))
+                #unit:degree per second
+                rate.append(self.combine_reg('>h', resp[4],resp[5]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+                rate.append(self.combine_reg('>h', resp[6],resp[7]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+                rate.append(self.combine_reg('>h', resp[8],resp[9]) * (sratm_fac.get("rate")[0]) + (sratm_fac.get("rate")[1]))
+                #unit:g
+                acc.append(self.combine_reg('>h', resp[10],resp[11]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+                acc.append(self.combine_reg('>h', resp[12],resp[13]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1]))
+                acc.append(self.combine_reg('>h', resp[14],resp[15]) * (sratm_fac.get("accel")[0]) + (sratm_fac.get("accel")[1])) 
+                #unit:deg
+                if '330BI' in self.module and first_register == 0x3F:
+                    deg.append(self.combine_reg('>h', resp[18],resp[19]) * 360/65536)
+                    deg.append(self.combine_reg('>h', resp[20],resp[21]) * 360/65536)
+                    deg.append(self.combine_reg('>h', resp[22],resp[23]) * 360/65536)
+                    # return rate, acc, deg   
+                if "330BA" in self.module and first_register == 0x3F:
+                    tmstp.append(self.combine_reg('>H', resp[18],resp[19]) * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
+                    tmstp.append(self.combine_reg('>H', resp[20],resp[21]) * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
+                    # return rate, acc, tmstp   
+                temp.append(self.combine_reg('>h', resp[16],resp[17]) * (sratm_fac.get("temp")[0]) + (sratm_fac.get("temp")[1])) 
+                if '300ZI' in self.module and first_register == 0x3F:
+                    mag.append(self.combine_reg('>h', resp[18],resp[19]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
+                    mag.append(self.combine_reg('>h', resp[20],resp[21]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1]))
+                    mag.append(self.combine_reg('>h', resp[22],resp[23]) * (sratm_fac.get("mag")[0]) + (sratm_fac.get("mag")[1])) 
+                if '300ZI' in self.module and first_register == 0x3D:
+                    # deg.append(self.combine_reg('>h', resp[18],resp[19]) * 57.3 * (2*math.pi)/65536) #65536/(2*math.pi)=10430.378350470453   65536/360=0.0054931640625
+                    # deg.append(self.combine_reg('>h', resp[20],resp[21]) *  57.3 * (2*math.pi)/65536)
+                    # deg.append(self.combine_reg('>h', resp[22],resp[23]) *  57.3 * (2*math.pi)/65536)     
+                    deg.append(self.combine_reg('>h', resp[18],resp[19]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
+                    deg.append(self.combine_reg('>h', resp[20],resp[21]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))
+                    deg.append(self.combine_reg('>h', resp[22],resp[23]) * (sratm_fac.get("vg_angle")[0]) + (sratm_fac.get("vg_angle")[1]))       
         return sts, rate, acc, temp, mag, deg, tmstp
 
     def spidev_setting(self):
@@ -189,10 +195,11 @@ class SpiOpenIMU:
         print(self.spi.bits_per_word)
         print(self.spi.lsbfirst)
         return True
-    def combine_reg(self,msb,lsb, fmt= '>h'):
-        msb = struct.pack('B',msb) 
-        lsb = struct.pack('B',lsb)      
-        return struct.unpack(fmt,msb+lsb)[0]   #MSB firstly
+    def combine_reg(self,fmt='>h',*msb_lsb):
+        temp_bytes = b''
+        for i in msb_lsb: 
+            temp_bytes += struct.pack('B',i)
+        return struct.unpack(fmt,temp_bytes)[0]   #MSB firstly
 
     def power_reset(self, delay=1):
         self.power.power_off()

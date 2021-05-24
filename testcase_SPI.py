@@ -73,6 +73,7 @@ class test_case:
             std_burst = self.config.get(burst_type)
             register, length, payload,factors = std_burst.get("register"), std_burst.get("length"), std_burst.get("payload"), std_burst.get("factors")
             rlt_burst = self.dev.burst_read(first_register=int(register,16),subregister_num=length,sratm_fac=factors) 
+            print(rlt_burst, type(rlt_burst))
             idx_item = 0
             for i in rlt_burst:
                 for j in i:
