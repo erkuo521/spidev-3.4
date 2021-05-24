@@ -108,7 +108,7 @@ class SpiOpenIMU:
         #         pass 
         while (not GPIO.event_detected(self.interrupt_channel)) and self.drdy:                
             pass 
-        if "381" in self.module == "381":
+        if "381" in self.module:
             GPIO.output(self.cs_channel,GPIO.LOW)
             resp = self.spi.xfer2([first_register,0x00],self.speed,self.speed)
             GPIO.output(self.cs_channel,GPIO.HIGH)
