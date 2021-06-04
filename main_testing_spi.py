@@ -30,9 +30,10 @@ from OpenIMU_SPI_cek import *
 from testcase_SPI import *
 
 try: 
-    module_name = "330BA"
+    module_name = "331BI"
     app_name = "IMU"
-    fw_num = '26.0.8'
+    fw_num = '8.0.17'
+
 
     openimu_spi = SpiOpenIMU(target_module=module_name,drdy_status=True, fw=fw_num) 
 
@@ -50,20 +51,20 @@ try:
     test_runner = test_case(spi_module=openimu_spi, spi_config=spi_attribute, recoredfile=f)
     # test_runner.recover_default_setting(save_config=True)
 
-    # test_runner.default_setting_check();
-    # test_runner.single_data_reading();
+    test_runner.default_setting_check();
+    test_runner.single_data_reading();
 
     # test_runner.burst_data_reading(burst_type="extended_vg_burst")
-    # test_runner.burst_data_reading(burst_type="standard_burst")
-    test_runner.burst_data_reading(burst_type="standard_burst_4bytes")
+    test_runner.burst_data_reading(burst_type="standard_burst")
+    # test_runner.burst_data_reading(burst_type="standard_burst_4bytes")
 
     # test_runner.burst_data_reading(burst_type="extended_mag_burst")
 
-    # if "330BA" in module_name:
-    #     test_runner.burst_data_reading(burst_type="extended_time_burst") 
+    if "330BA" in module_name or "331BI" in module_name:
+        test_runner.burst_data_reading(burst_type="extended_time_burst") 
     
 
-    # test_runner.setting_check_pwr_rst(save_config=False)
+    test_runner.setting_check_pwr_rst(save_config=False)
     # test_runner.setting_check_pwr_rst(save_config=True)
 
     # test_runner.single_register_setting_values()

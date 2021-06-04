@@ -1,0 +1,67 @@
+{
+    "name":"parameters for devices",
+    "version":"8.0.17",
+    "type":"IMU331BI",
+    "app":"IMU",
+
+    "test_items":[],
+    "start_idx": -1, 
+    "debug_mode":"FALSE", 
+
+    "set_register_sequence":1,
+
+    "set_register_notes":["address", "default value", "new set value", ["to be set val list"]],
+    "set_register":{
+        "DRDY_RATE":["0x37", "0x0A", "0x02", ["0x00", "0x01", "0x02", "0x03", "0x04", "0x0A", "0x0B"]],
+        "RATE_LPF": ["0x38", "0x80", "0x50", ["0x00", "0x10", "0x60", "0x50", "0x40", "0x80", "0x90", "0x30", "0x20", "0xA0", "0xB0"]],
+        "ACCEL_LPF": ["0x3B", "0x80", "0x50", ["0x00", "0x10", "0x60", "0x50", "0x40", "0x80", "0x90", "0x30", "0x20", "0xA0", "0xB0"]],
+        "SERIAL_NUMBER0": ["0x60", "0x36"],
+        "SERIAL_NUMBER1": ["0x61", "0xE1"],
+        "SERIAL_NUMBER2": ["0x62", "0xA1"],
+        "SERIAL_NUMBER3": ["0x63", "0x7B"],
+        "PRODUCT_ID0": ["0x56", "0x10"],
+        "PRODUCT_ID1": ["0x57", "0x33"],
+        "FW_VERSION0": ["0x65", "0x00"],
+        "FW_VERSION1": ["0x66", "0x08"],
+        "AVERAGE_CTL": ["0x70", "0x01", "NA", ["NA"]],
+        "ORIENTATION_MSB": ["0x74", "0x6B", "0x00"],
+        "ORIENTATION_LSB": ["0x75", "0x00", "0x09"],
+        "HW_VERSION": ["0x7E", "0x39"]
+    },
+    "data_register_notes":["address", "factor", "offset"],
+    "data_register":{
+        "X_Rate": ["0x04", 0.015625, 0],
+        "Y_Rate": [ "0x06", 0.015625, 0],
+        "Z_Rate": [ "0x08", 0.015625, 0],
+        "X_Accel": [ "0x0A", 0.00025, 0],
+        "Y_Accel": [ "0x0C", 0.00025, 0],
+        "Z_Accel": [ "0x0E", 0.00025, 0],
+        "BOARD_TEMP": [ "0x16", 0.073111172849435, 31]
+    },
+    "data_burst_notes":["factor", "offset"],
+    "standard_burst":{
+        "register":"0x3E",
+        "length":8,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 31]
+        }
+    },
+    "extended_time_burst":{
+        "register":"0x3F",
+        "length":10,
+        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "time1", "time2"],
+        "factors":{
+            "status": [1, 0],
+            "rate": [0.015625, 0],
+            "accel": [0.00025, 0],
+            "temp": [0.073111172849435, 31],
+            "time": [0.0001, 0],
+            "1pps-used": [0.000001]
+        }
+    }
+}
+

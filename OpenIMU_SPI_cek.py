@@ -79,13 +79,14 @@ class SpiOpenIMU:
             GPIO.output(self.cs_channel,GPIO.LOW) 
             resp_single = self.spi.xfer2([0x00,0x00],self.speed,self.speed)  #receive the back target data
             GPIO.output(self.cs_channel,GPIO.HIGH)
-            return self.combine_reg(resp_single[0],resp_single[1])
+            return self.combine_reg('>h', resp_single[0],resp_single[1])
         else:
             time.sleep(0.000010)
             GPIO.output(self.cs_channel,GPIO.LOW) 
             resp_single = self.spi.xfer2([target_register,0x00,0x00,0x00],self.speed,self.speed)         
-            GPIO.output(self.cs_channel,GPIO.HIGH)                   
-            return self.combine_reg(resp_single[2],resp_single[3])
+            GPIO.output(self.cs_channel,GPIO.HIGH) 
+            print("SPI raw read：", hex(resp_single[2]), hex(resp_single[3]))                  
+            return self.combine_reg('>h', resp_single[2],resp_single[3])
         
     def single_write(self, target_register, target_data):
         # if self.drdy and self.module != "300":
@@ -157,7 +158,7 @@ class SpiOpenIMU:
                     deg.append(self.combine_reg('>h', resp[20],resp[21]) * 360/65536)
                     deg.append(self.combine_reg('>h', resp[22],resp[23]) * 360/65536)
                     # return rate, acc, deg   
-                if "330BA" in self.module and first_register == 0x3F:
+                if ("330BA" in self.module or '331BI' in self.module) and first_register == 0x3F:
                     tmstp.append(self.combine_reg('>H', resp[18],resp[19]) * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
                     tmstp.append(self.combine_reg('>H', resp[20],resp[21]) * (sratm_fac.get("time")[0]) + (sratm_fac.get("time")[1]))
                     # return rate, acc, tmstp   

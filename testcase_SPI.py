@@ -49,7 +49,8 @@ class test_case:
             #j[0]--target register, j[1]--target data. if j[1]== None, igore
             if j[1] == "None":
                 continue
-            fb = self.dev.single_read(int(j[0],16))  
+            fb = self.dev.single_read(int(j[0],16))
+            print('2bytes reading:', hex(fb))  
             time.sleep(0.010)          
             fb = (fb >> 8) & 0x00ff if self.sequence == 0 else (fb & 0x00FF)
             rlt = 'pass' if fb == int(j[1], 16) else 'fail'
@@ -73,7 +74,7 @@ class test_case:
             std_burst = self.config.get(burst_type)
             register, length, payload,factors = std_burst.get("register"), std_burst.get("length"), std_burst.get("payload"), std_burst.get("factors")
             rlt_burst = self.dev.burst_read(first_register=int(register,16),subregister_num=length,sratm_fac=factors) 
-            print(rlt_burst, type(rlt_burst))
+            # print(rlt_burst, type(rlt_burst))
             idx_item = 0
             for i in rlt_burst:
                 for j in i:
