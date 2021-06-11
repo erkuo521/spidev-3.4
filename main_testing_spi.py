@@ -43,28 +43,33 @@ try:
     str_config = f"module style:{openimu_spi.module}; drdy:{openimu_spi.drdy}; {app_name}_{openimu_spi.fw_version};\n"
     print(str_config)
     f.write(str_config) 
-    input("Power on IMU !!!!!!!!")
-    time.sleep(1)  
+    print("Power on IMU !!!!!!!!")
+    # time.sleep(1)
     with open('spi_config' + "".join(filename[:4]) + '.json') as json_data:
         spi_attribute = json.load(json_data)
 
     test_runner = test_case(spi_module=openimu_spi, spi_config=spi_attribute, recoredfile=f)
+    test_runner.dev.power_reset()  #IMU331 NEED TO WAIT 1.26s after power on.
+    
     # test_runner.recover_default_setting(save_config=True)
 
     test_runner.default_setting_check();
     test_runner.single_data_reading();
 
     # test_runner.burst_data_reading(burst_type="extended_vg_burst")
-    test_runner.burst_data_reading(burst_type="standard_burst")
+    
+    # while True:
+    #     test_runner.burst_data_reading(burst_type="standard_burst")
+    #     input('123')
     # test_runner.burst_data_reading(burst_type="standard_burst_4bytes")
 
     # test_runner.burst_data_reading(burst_type="extended_mag_burst")
 
-    if "330BA" in module_name or "331BI" in module_name:
-        test_runner.burst_data_reading(burst_type="extended_time_burst") 
+    # if "330BA" in module_name or "331BI" in module_name:
+    #     test_runner.burst_data_reading(burst_type="extended_time_burst") 
     
 
-    test_runner.setting_check_pwr_rst(save_config=False)
+    # test_runner.setting_check_pwr_rst(save_config=False)
     # test_runner.setting_check_pwr_rst(save_config=True)
 
     # test_runner.single_register_setting_values()

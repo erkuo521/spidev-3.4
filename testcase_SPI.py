@@ -11,6 +11,7 @@ OpenIMU SPI package version 0.2.0.
 	gpio(bcm4)  <==>      cs   black line
     gpio(bcm17) <==>      drdy red line
 	gnd         <==>      gnd
+    gpio(bcm27) <==>      nRST
 @cek from Aceinna 2019.11.4
 '''
 
@@ -127,7 +128,7 @@ class test_case:
             self.file.write(pr)
         # while input('Reset power of IMU, now? y/n?') != 'y':            
         #     time.sleep(1)
-        self.dev.power_reset()
+        self.dev.power_reset() 
 
     def single_register_setting_values(self, actual_measure=[]):
         tbs_registers = collections.OrderedDict()
@@ -172,16 +173,17 @@ class test_case:
             i_msb_lsb = [(i >> 8) & 0x00ff, i & 0x00FF]
             
             for m,n in zip(reg_list[0], i_msb_lsb):
-                # print(reg_list, m,n)
+                print(reg_list, hex(m), hex(n))
                 self.dev.single_write(m, n) 
                 time.sleep(0.01)
-            for j,k in zip(reg_list[0], i_msb_lsb):
-                fb = self.dev.single_read(j) 
+            for j,k in zip(reg_list[0], i_msb_lsb):                
+                fb_2bytes = self.dev.single_read(j) 
                 time.sleep(0.01)
-                fb = (fb >> 8) & 0x00ff if self.sequence == 0 else (fb & 0x00FF)
+                fb = (fb_2bytes >> 8) & 0x00ff if self.sequence == 0 else (fb_2bytes & 0x00FF)
                 temp_rlt = 'pass' if ( (fb == k) or ((i == 0x1111) and (fb != 0x11)) ) else 'fail'
                 double_rlt.append(temp_rlt)
-                fb_list.append(fb)          
+                fb_list.append(fb)  
+                print([hex(j), hex(fb_2bytes), hex(fb), hex(k), temp_rlt, fb_list])        
             rlt = 'pass' if 'fail' not in double_rlt else 'fail'
             pr = f"{str(reg_name)}=register={hex(reg_list[0][0])}{hex(reg_list[0][1])}=write={hex(i)}=feedback={hex(fb_list[0])}{hex(fb_list[1])}=result={rlt}; \n"
             print(pr)
@@ -211,7 +213,7 @@ class test_case:
                 continue
             self.dev.single_write(int(j[0],16), int(j[1],16))  
             time.sleep(0.010)         
-            pr = f"{i}=register={j[0]}=expect={j[1]}; \n"
+            pr = f"{i}=register={j[0]}=write={j[1]}; \n"
             print(pr)
             self.file.write(pr) 
 

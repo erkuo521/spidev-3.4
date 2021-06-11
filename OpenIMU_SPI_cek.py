@@ -37,7 +37,7 @@ class SpiOpenIMU:
         self.cs_channel = cs_pin
         self.interrupt_channel = interrupt_pin
         self.drdy = drdy_status
-        self.speed = 2000000
+        self.speed = 1000000 # 1M
         self.delay = 0 #ns
         self.word = 8 #硬件限制为8位
         self.fw_version = fw
@@ -202,7 +202,10 @@ class SpiOpenIMU:
             temp_bytes += struct.pack('B',i)
         return struct.unpack(fmt,temp_bytes)[0]   #MSB firstly
 
-    def power_reset(self, delay=1):
+    def power_reset(self, delay=2):
+        '''
+        #special for IMU331, WAIT 1.25S at least
+        '''
         self.power.power_off()
         time.sleep(delay)
         self.power.power_on()
