@@ -71,14 +71,6 @@
             "1pps-used": [0.0001],
             "1khz":[0.000001]
         }
-    },
-    "standard_burst_4bytes":{
-        "register":"0x3D",
-        "length":8,
-        "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp"],
-        "factors":{
-            "convert": "convert: int to float"
-        }
     }
 }
 

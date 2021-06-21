@@ -59,17 +59,16 @@ try:
     # test_runner.burst_data_reading(burst_type="extended_vg_burst")
     
     # while True:
-    #     test_runner.burst_data_reading(burst_type="standard_burst")
-    #     input('123')
-    # test_runner.burst_data_reading(burst_type="standard_burst_4bytes")
+    # test_runner.burst_data_reading(burst_type="standard_burst")
+        # input('123')
 
     # test_runner.burst_data_reading(burst_type="extended_mag_burst")
 
     # if "330BA" in module_name or "331BI" in module_name:
-    #     test_runner.burst_data_reading(burst_type="extended_time_burst") 
+    # test_runner.burst_data_reading(burst_type="extended_time_burst") 
     
 
-    # test_runner.setting_check_pwr_rst(save_config=False)
+    test_runner.setting_check_pwr_rst(save_config=False)
     # test_runner.setting_check_pwr_rst(save_config=True)
 
     # test_runner.single_register_setting_values()
