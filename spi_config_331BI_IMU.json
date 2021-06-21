@@ -25,7 +25,7 @@
         "FW_VERSION1": ["0x66", "0x08"],
         "AVERAGE_CTL": ["0x70", "0x01", "NA", ["NA"]],
         "ORIENTATION_MSB": ["0x74", "0x6B", "0x00"],
-        "ORIENTATION_LSB": ["0x75", "0x00", "0x6B"],
+        "ORIENTATION_LSB": ["0x75", "0x00", "0x09"],
         "HW_VERSION": ["0x7E", "0x39"]
     },
     "data_register_notes":["address", "factor", "offset"],

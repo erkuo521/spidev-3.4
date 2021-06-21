@@ -91,9 +91,10 @@ class SpiOpenIMU:
     def single_write(self, target_register, target_data):
         # if self.drdy and self.module != "300":
         #     while not GPIO.event_detected(self.interrupt_channel):                
-        #         pass    
-        GPIO.output(self.cs_channel,GPIO.LOW)           
-        self.spi.xfer2([target_register | 0x80, target_data],self.speed,self.speed)  #write data, such as 0xF010, target address is 0x70, and data input is 0x10
+        #         pass 
+        GPIO.output(self.cs_channel,GPIO.LOW)    
+        temp_reg = target_register | 0x80       
+        self.spi.xfer2([temp_reg, target_data],self.speed,self.speed)  #write data, such as 0xF010, target address is 0x70, and data input is 0x10
         GPIO.output(self.cs_channel,GPIO.HIGH)
         return True 
     

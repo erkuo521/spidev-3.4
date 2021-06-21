@@ -116,10 +116,12 @@ class test_case:
             self.dev.power_reset()
         for i,j in zip(tbs_registers.keys(), tbs_registers.values()): 
             #j[0]--target register, j[1]--target data. j[2]-new set value, NA is igore
-            if j[2] != "NA":                
+            if j[2] != "NA":
                 fb = self.dev.single_read(int(j[0],16))                
                 fb = (fb >> 8) & 0x00ff if self.sequence == 0 else (fb & 0x00FF)
                 rlt = 'pass' if fb == int(j[2], 16) else 'fail'
+                if ("331BI" in self.dev.module) and 'ORIEN' in i:
+                    rlt = "to be check"
                 time.sleep(0.010)
                 pr = f"{i}=register={j[0]}=write={j[2]}=expect={j[2]}=feedback={fb:#x}=result={rlt}; \n"
             else:
@@ -176,13 +178,13 @@ class test_case:
                 print(reg_list, hex(m), hex(n))
                 self.dev.single_write(m, n) 
                 time.sleep(0.01)
-            for j,k in zip(reg_list[0], i_msb_lsb):                
+            for j,k in zip(reg_list[0], i_msb_lsb[::-1]):                
                 fb_2bytes = self.dev.single_read(j) 
                 time.sleep(0.01)
                 fb = (fb_2bytes >> 8) & 0x00ff if self.sequence == 0 else (fb_2bytes & 0x00FF)
                 temp_rlt = 'pass' if ( (fb == k) or ((i == 0x1111) and (fb != 0x11)) ) else 'fail'
                 double_rlt.append(temp_rlt)
-                fb_list.append(fb)  
+                fb_list.append(fb)
                 print([hex(j), hex(fb_2bytes), hex(fb), hex(k), temp_rlt, fb_list])        
             rlt = 'pass' if 'fail' not in double_rlt else 'fail'
             pr = f"{str(reg_name)}=register={hex(reg_list[0][0])}{hex(reg_list[0][1])}=write={hex(i)}=feedback={hex(fb_list[0])}{hex(fb_list[1])}=result={rlt}; \n"
@@ -210,10 +212,15 @@ class test_case:
         for i,j in zip(registers.keys(), registers.values()): 
             #j[0]--target register, j[1]--target data. if j[1]== None, igore
             if j[1] == "None":
-                continue
-            self.dev.single_write(int(j[0],16), int(j[1],16))  
+                continue          
+            wrt_val = j[1]
+            if ("331BI" in self.dev.module) and 'ORIENTATION_MSB' in i:
+                wrt_val = registers.get('ORIENTATION_LSB')[1]
+            if ("331BI" in self.dev.module) and 'ORIENTATION_LSB' in i:
+                wrt_val = registers.get('ORIENTATION_MSB')[1]
+            self.dev.single_write(int(j[0],16), int(wrt_val,16))
             time.sleep(0.010)         
-            pr = f"{i}=register={j[0]}=write={j[1]}; \n"
+            pr = f"{i}=register={j[0]}=write={wrt_val}; \n"
             print(pr)
             self.file.write(pr) 
 
