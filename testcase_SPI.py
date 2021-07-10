@@ -1,5 +1,5 @@
 '''
-OpenIMU SPI package version 0.2.0.
+OpenIMU SPI package version 26.0.13.
 -pip install spidev3.4, 
 -read package through SPI interface, OpenIMU330BI test on Pi3 board(Raspbian OS,Raspberry 3B+).
 -Spi slave: OpenIMU 330 EVK

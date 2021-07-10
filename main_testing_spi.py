@@ -1,5 +1,5 @@
 '''
-OpenIMU SPI package version 0.2.0.
+OpenIMU SPI package version 26.0.13.
 -pip install spidev3.4, 
 -read package through SPI interface, OpenIMU330BI test on Pi3 board(Raspbian OS,Raspberry 3B+).
 -Spi slave: OpenIMU 330 EVK
@@ -12,7 +12,7 @@ OpenIMU SPI package version 0.2.0.
     gpio(bcm17) <==>      drdy red line
 	gnd         <==>      gnd
     gpio(bcm27) <==>      nRST
-@cek from Aceinna 2019.11.4
+@cek from Aceinna 20210710
 '''
 
 import os
@@ -63,14 +63,14 @@ try:
         
 
     # test_runner.burst_data_reading(burst_type="extended_mag_burst")
-    input('start burst')
-    while True:
-        if "330BA" in module_name or "331BI" in module_name:
-            test_runner.burst_data_reading(burst_type="extended_time_burst") 
     # input('start burst')
     # while True:
     #     if "330BA" in module_name or "331BI" in module_name:
-    #         test_runner.burst_data_reading(burst_type="extended_time_burst_hr") 
+    #         test_runner.burst_data_reading(burst_type="extended_time_burst") 
+    input('start burst')
+    while True:
+        if "330BA" in module_name or "331BI" in module_name:
+            test_runner.burst_data_reading(burst_type="extended_time_burst_hr") 
     
 
     # test_runner.setting_check_pwr_rst(save_config=False)

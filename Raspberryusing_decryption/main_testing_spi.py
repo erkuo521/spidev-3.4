@@ -57,9 +57,9 @@ try:
     test_runner.single_data_reading();
 
     # test_runner.burst_data_reading(burst_type="extended_vg_burst")
-    input('start burst')
-    while True:
-        test_runner.burst_data_reading(burst_type="standard_burst")
+    # input('start burst')
+    # while True:
+    #     test_runner.burst_data_reading(burst_type="standard_burst")
         
 
     # test_runner.burst_data_reading(burst_type="extended_mag_burst")
@@ -67,10 +67,10 @@ try:
     # while True:
     #     if "330BA" in module_name or "331BI" in module_name:
     #         test_runner.burst_data_reading(burst_type="extended_time_burst") 
-    # input('start burst')
-    # while True:
-    #     if "330BA" in module_name or "331BI" in module_name:
-    #         test_runner.burst_data_reading(burst_type="extended_time_burst_hr") 
+    input('start burst')
+    while True:
+        if "330BA" in module_name or "331BI" in module_name:
+            test_runner.burst_data_reading(burst_type="extended_time_burst_hr") 
     
 
     # test_runner.setting_check_pwr_rst(save_config=False)
