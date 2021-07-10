@@ -1,6 +1,6 @@
 {
     "name":"parameters for devices",
-    "version":"8.0.17",
+    "version":"8.0.18",
     "type":"IMU331BI",
     "app":"IMU",
 
@@ -23,10 +23,10 @@
         "PRODUCT_ID1": ["0x57", "0x33"],
         "FW_VERSION0": ["0x65", "0x00"],
         "FW_VERSION1": ["0x66", "0x08"],
-        "AVERAGE_CTL": ["0x70", "0x01", "NA", ["NA"]],
+        "AVERAGE_CTL": ["0x70", "0x01", "0x00", ["NA"]],
         "ORIENTATION_MSB": ["0x74", "0x6B", "0x00"],
         "ORIENTATION_LSB": ["0x75", "0x00", "0x09"],
-        "HW_VERSION": ["0x7E", "0x39"]
+        "HW_VERSION": ["0x7E", "0x3A"]
     },
     "data_register_notes":["address", "factor", "offset"],
     "data_register":{

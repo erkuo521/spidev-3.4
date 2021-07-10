@@ -2,7 +2,7 @@
     "name":"parameters for devices",
     "version":"26.0.13",
     "type":"IMU330BA",
-    "app":"IMU",
+    "app":"IMU125",
 
     "test_items":[],
     "start_idx": -1, 
@@ -15,9 +15,9 @@
         "DRDY_RATE":["0x37", "0x01", "0x02", ["0x00", "0x01", "0x02", "0x03", "0x04", "0x05", "0x06", "0x07", "0x08", "0x09", "0x0B"]],
         "ACCEL_LPF": ["0x38", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
         "ACCEL_SCALE_FACTOR": ["0x46", "0x04"],
-        "RATE_SCALE_FACTOR": ["0X47", "0x40"],
+        "RATE_SCALE_FACTOR": ["0X47", "0x00"],
         "ACCEL_SCALE_FACTOR_HR": ["0X48", "0x04"],
-        "RATE_SCALE_FACTOR_HR": ["0X49", "0x40"],
+        "RATE_SCALE_FACTOR_HR": ["0X49", "0x00"],
         "SERIAL_NUMBER0": ["0x52", "0x21"],
         "SERIAL_NUMBER1": ["0x53", "0x78"],
         "SERIAL_NUMBER2": ["0x54", "0x00"],
@@ -30,7 +30,7 @@
         "HW_STATUS": ["0x5C", "0x0"],
         "SW_STATUS": ["0x5E", "0x0"],
         "ACCEL_RANGE": ["0x72", "0x08", "NA", ["NA"]],
-        "RATE_RANGE": ["0x73", "0x08", "NA", ["NA"]],
+        "RATE_RANGE": ["0x73", "0x02", "NA", ["NA"]],
         "ORIENTATION_MSB": ["0x74", "0x00", "0x00"],
         "ORIENTATION_LSB": ["0x75", "0x6B", "0x09"],
         "RATE_LPF": ["0x78", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
@@ -39,9 +39,9 @@
     },
     "data_register_notes":["address", "factor", "offset"],
     "data_register":{
-        "X_Rate": ["0x04", 0.015625, 0],
-        "Y_Rate": [ "0x06", 0.015625, 0],
-        "Z_Rate": [ "0x08", 0.015625, 0],
+        "X_Rate": ["0x04", 0.00390625, 0],
+        "Y_Rate": [ "0x06", 0.00390625, 0],
+        "Z_Rate": [ "0x08", 0.00390625, 0],
         "X_Accel": [ "0x0A", 0.00025, 0],
         "Y_Accel": [ "0x0C", 0.00025, 0],
         "Z_Accel": [ "0x0E", 0.00025, 0],
@@ -55,7 +55,7 @@
         "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp"],
         "factors":{
             "status": [1, 0],
-            "rate": [0.015625, 0],
+            "rate": [0.00390625, 0],
             "accel": [0.00025, 0],
             "temp": [0.073111172849435, 31]
         }
@@ -66,7 +66,7 @@
         "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "time1", "time2"],
         "factors":{
             "status": [1, 0],
-            "rate": [0.015625, 0],
+            "rate": [0.00390625, 0],
             "accel": [0.00025, 0],
             "temp": [0.073111172849435, 31],
             "time": [0.0001, 0],
@@ -80,8 +80,8 @@
         "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "time1", "time2"],
         "factors":{
             "status": [1, 0],
-            "rate": [0.000015625, 0],
-            "accel": [0.00025, 0],
+            "rate": [0.00000390625, 0],
+            "accel": [0.00000025, 0],
             "temp": [0.073111172849435, 31],
             "time": [0.0001, 0],
             "1pps-used": [0.0001],

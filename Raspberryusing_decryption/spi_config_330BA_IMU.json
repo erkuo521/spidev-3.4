@@ -18,14 +18,14 @@
         "RATE_SCALE_FACTOR": ["0X47", "0x40"],
         "ACCEL_SCALE_FACTOR_HR": ["0X48", "0x04"],
         "RATE_SCALE_FACTOR_HR": ["0X49", "0x40"],
-        "SERIAL_NUMBER0": ["0x52", "0x21"],
-        "SERIAL_NUMBER1": ["0x53", "0x78"],
+        "SERIAL_NUMBER0": ["0x52", "0x19"],
+        "SERIAL_NUMBER1": ["0x53", "0x74"],
         "SERIAL_NUMBER2": ["0x54", "0x00"],
-        "SERIAL_NUMBER3": ["0x55", "0x00"],
-        "SERIAL_NUMBER4": ["0x58", "0x00"],
-        "SERIAL_NUMBER5": ["0x59", "0x33"],
+        "SERIAL_NUMBER3": ["0x55", "0x01"],
+        "SERIAL_NUMBER4": ["0x58", "0x2"],
+        "SERIAL_NUMBER5": ["0x59", "0x84"],
         "PRODUCT_ID0": ["0x56", "0x33"],
-        "PRODUCT_ID1": ["0x57", "0x0A"],
+        "PRODUCT_ID1": ["0x57", "0x00"],
         "MASTER_STATUS": ["0x5A", "0x0"],
         "HW_STATUS": ["0x5C", "0x0"],
         "SW_STATUS": ["0x5E", "0x0"],
@@ -35,7 +35,7 @@
         "ORIENTATION_LSB": ["0x75", "0x6B", "0x09"],
         "RATE_LPF": ["0x78", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
         "HW_VERSION": ["0x7E", "0x0"],
-        "SW_VERSION": ["0x7F", "0x7B"]
+        "SW_VERSION": ["0x7F", "0x78"]
     },
     "data_register_notes":["address", "factor", "offset"],
     "data_register":{
@@ -80,7 +80,7 @@
         "payload":["status", "x_rate", "y_rate", "z_rate", "x_accel", "y_accel", "z_accel", "board_temp", "time1", "time2"],
         "factors":{
             "status": [1, 0],
-            "rate": [0.000015625, 0],
+            "rate": [0.015625, 0],
             "accel": [0.00025, 0],
             "temp": [0.073111172849435, 31],
             "time": [0.0001, 0],
