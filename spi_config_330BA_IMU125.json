@@ -1,6 +1,6 @@
 {
     "name":"parameters for devices",
-    "version":"26.0.13",
+    "version":"26.0.14",
     "type":"IMU330BA",
     "app":"IMU125",
 
@@ -35,7 +35,7 @@
         "ORIENTATION_LSB": ["0x75", "0x6B", "0x09"],
         "RATE_LPF": ["0x78", "0x40", "0x50", ["0x00", "0x03", "0x04", "0x05", "0x06", "0x30", "0x40", "0x50", "0x60", "0x0B"]],
         "HW_VERSION": ["0x7E", "0x0"],
-        "SW_VERSION": ["0x7F", "0x7B"]
+        "SW_VERSION": ["0x7F", "0x7C"]
     },
     "data_register_notes":["address", "factor", "offset"],
     "data_register":{

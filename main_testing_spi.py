@@ -1,5 +1,5 @@
 '''
-OpenIMU SPI package version 26.0.13.
+OpenIMU SPI package version 26.0.14.
 -pip install spidev3.4, 
 -read package through SPI interface, OpenIMU330BI test on Pi3 board(Raspbian OS,Raspberry 3B+).
 -Spi slave: OpenIMU 330 EVK
@@ -32,14 +32,14 @@ from testcase_SPI import *
 try: 
     module_name = "330BA"
     app_name = "IMU125"
-    fw_num = '26.0.13'
+    fw_num = '26.0.14'
 
 
     openimu_spi = SpiOpenIMU(target_module=module_name,drdy_status=True, fw=fw_num) 
 
     filename = ["_", openimu_spi.module,"_", app_name, "_", openimu_spi.fw_version]
 
-    f = open("data" + "".join(filename) + '.txt', "w")
+    f = open("data/data" + "".join(filename) + '.txt', "w")
     str_config = f"module style:{openimu_spi.module}; drdy:{openimu_spi.drdy}; {app_name}_{openimu_spi.fw_version};\n"
     print(str_config)
     f.write(str_config) 
